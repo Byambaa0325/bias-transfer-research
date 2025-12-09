@@ -403,4 +403,4 @@ For issues or questions:
 
 ## License
 
-[Add your license information here]
+This repository is licensed under the MIT License.
