@@ -1,0 +1,86 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+venv/
+env/
+ENV/
+.venv/
+
+# Python virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Documentation
+docs/
+doc/
+*.md.backup
+*.rst.backup
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Distribution / packaging
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+.tox/
+.nox/
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+
+# Logs
+*.log
+logs/
+
+# Data checkpoints
+*checkpoint*.csv
+checkpoint*.csv
+*_checkpoint_*.csv
+*checkpoint*.json
+checkpoint*.json
+*_checkpoint_*.json
+
+# OS files
+Thumbs.db

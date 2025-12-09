@@ -1,0 +1,56 @@
+{
+  "configuration": {
+    "bias_generator_model": "us.amazon.nova-pro-v1:0",
+    "use_persona_prompts": true,
+    "bias_types": [
+      "confirmation_bias",
+      "anchoring_bias",
+      "demographic_bias",
+      "availability_bias",
+      "framing_bias",
+      "leading_question",
+      "stereotypical_assumption",
+      "negativity_bias"
+    ],
+    "category_filter": "stereotype",
+    "max_workers": 8,
+    "max_requests_per_second": 5.0,
+    "use_parallel": true,
+    "stereotype_type_filter": null,
+    "sample_limit": 1200,
+    "checkpoint_interval": 50
+  },
+  "statistics": {
+    "total_entries": 1158,
+    "entries_with_target_question": 1158,
+    "duration_minutes": 30.0,
+    "confirmation_bias_refusals": 0,
+    "confirmation_bias_errors": 0,
+    "confirmation_bias_questions_generated": 1158,
+    "anchoring_bias_refusals": 0,
+    "anchoring_bias_errors": 0,
+    "anchoring_bias_questions_generated": 1158,
+    "demographic_bias_refusals": 0,
+    "demographic_bias_errors": 0,
+    "demographic_bias_questions_generated": 1158,
+    "availability_bias_refusals": 0,
+    "availability_bias_errors": 0,
+    "availability_bias_questions_generated": 1158,
+    "framing_bias_refusals": 0,
+    "framing_bias_errors": 0,
+    "framing_bias_questions_generated": 1158,
+    "leading_question_refusals": 0,
+    "leading_question_errors": 0,
+    "leading_question_questions_generated": 1158,
+    "stereotypical_assumption_refusals": 0,
+    "stereotypical_assumption_errors": 0,
+    "stereotypical_assumption_questions_generated": 1158,
+    "negativity_bias_refusals": 0,
+    "negativity_bias_errors": 0,
+    "negativity_bias_questions_generated": 1158
+  },
+  "output_files": {
+    "csv": "data\\multiturn_emgsd_dataset_20251208_230344.csv",
+    "json": "data\\multiturn_emgsd_dataset_20251208_230344.json"
+  }
+}
