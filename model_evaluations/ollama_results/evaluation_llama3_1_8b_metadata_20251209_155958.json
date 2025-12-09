@@ -1,0 +1,19 @@
+{
+  "model_id": "llama3.1:8b",
+  "timestamp": "20251209_155958",
+  "evaluation_config": {
+    "sample_limit": 10,
+    "bias_types": [
+      "confirmation_bias",
+      "anchoring_bias"
+    ],
+    "total_entries_in_dataset": 1158,
+    "entries_evaluated": 10
+  },
+  "statistics": {
+    "total_evaluations": 20,
+    "successful": 20,
+    "failed": 0
+  },
+  "results_file": "evaluation_llama3_1_8b.json"
+}

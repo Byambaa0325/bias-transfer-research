@@ -2,12 +2,16 @@
 Model evaluator for bias injection experiments.
 
 Evaluates models on the multi-turn EMGSD dataset.
+Supports both Bedrock and Ollama inference sources.
 """
 
 from typing import Dict, Any, Optional, List
 from core.bedrock_llm_service import BedrockLLMService
 from core.bedrock_client import BedrockClient
+from core.ollama_llm_service import OllamaLLMService
+from core.ollama_client import OllamaClient
 from core.model_selector import ModelSelector
+from core.model_source_mapper import get_model_source, ModelSource
 import pandas as pd
 import re
 
@@ -15,6 +19,9 @@ import re
 class ModelEvaluator:
     """
     Evaluates a single model on the dataset.
+    
+    Supports both Bedrock and Ollama inference sources.
+    Automatically selects the appropriate client based on model ID.
     
     For each entry and bias type:
     1. Turn 1: Send bias injection question, get response
@@ -26,12 +33,22 @@ class ModelEvaluator:
         """
         Initialize evaluator for a specific model.
         
+        Automatically detects model source (Bedrock or Ollama) and initializes
+        the appropriate client.
+        
         Args:
             model_id: Model ID to evaluate
         """
         self.model_id = model_id
-        self.llm_service = BedrockLLMService()
-        self.client = BedrockClient()
+        self.model_source = get_model_source(model_id)
+        
+        # Initialize appropriate client based on model source
+        if self.model_source == ModelSource.BEDROCK:
+            self.llm_service = BedrockLLMService()
+            self.client = BedrockClient()
+        else:  # Ollama
+            self.llm_service = OllamaLLMService(default_model=model_id)
+            self.client = OllamaClient(default_model=model_id)
         
     def evaluate_entry(
         self,
@@ -52,18 +69,25 @@ class ModelEvaluator:
         target_question = entry['target_question']
         turn1_question = entry.get(turn1_question_col)
         
+        # Handle NaN values - convert to None for JSON compatibility
+        def clean_value(val):
+            """Convert NaN/NaT to None for JSON serialization"""
+            if pd.isna(val):
+                return None
+            return val
+        
         result = {
             'entry_index': entry.name,
             'model_id': self.model_id,
             'bias_type': bias_type,
             'target_question': target_question,
             'turn1_question': turn1_question,
-            # Include original EMGSD data
-            'emgsd_text': entry.get('emgsd_text', ''),
-            'emgsd_stereotype_type': entry.get('emgsd_stereotype_type', ''),
-            'emgsd_category': entry.get('emgsd_category', ''),
-            'emgsd_trait': entry.get('emgsd_trait', ''),
-            'emgsd_target_word': entry.get('emgsd_target_word', ''),
+            # Include original EMGSD data (handle NaN values)
+            'emgsd_text': clean_value(entry.get('emgsd_text', '')),
+            'emgsd_stereotype_type': clean_value(entry.get('emgsd_stereotype_type', '')),
+            'emgsd_category': clean_value(entry.get('emgsd_category', '')),
+            'emgsd_trait': clean_value(entry.get('emgsd_trait', '')),
+            'emgsd_target_word': clean_value(entry.get('emgsd_target_word')),  # Can be NaN/None
         }
         
         # Skip if no turn1 question
@@ -117,16 +141,34 @@ class ModelEvaluator:
             # Single turn
             messages = [{"role": "user", "content": prompt}]
         
-        # Build invoke parameters
-        selector = ModelSelector()
-        invoke_params = selector.build_invoke_params(
-            messages=messages,
-            model_id=self.model_id,
-            max_tokens=500
-        )
-        
-        # Get response
-        response = self.client.invoke(**invoke_params)
+        # Build invoke parameters based on model source
+        if self.model_source == ModelSource.BEDROCK:
+            # Use ModelSelector for Bedrock models
+            selector = ModelSelector()
+            invoke_params = selector.build_invoke_params(
+                messages=messages,
+                model_id=self.model_id,
+                max_tokens=500
+            )
+            response = self.client.invoke(**invoke_params)
+        else:  # Ollama
+            # For Ollama, use simpler invoke with stop sequences
+            stop_sequences = None
+            if 'llama' in self.model_id.lower():
+                stop_sequences = [
+                    "\n\nUser:",
+                    "\n\nAssistant:",
+                    "\nUser:",
+                    "\nAssistant:",
+                ]
+            
+            response = self.client.invoke(
+                messages=messages,
+                model=self.model_id,
+                max_tokens=500,
+                stop_sequences=stop_sequences,
+                temperature=0.7
+            )
         
         # Extract text
         if isinstance(response, dict):

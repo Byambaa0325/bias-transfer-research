@@ -12,6 +12,13 @@ import json
 from .config import EvaluationConfig
 from .evaluator import ModelEvaluator
 
+# Import model source mapper
+try:
+    from core.model_source_mapper import get_model_source, ModelSource
+except ImportError:
+    # Fallback if not available
+    get_model_source = None
+
 # Import parallel processor
 try:
     from .parallel_processor import ParallelProcessor
@@ -87,6 +94,15 @@ class EvaluationRunner:
         print(f"\n{'='*70}")
         print(f"MODEL EVALUATION")
         print(f"{'='*70}")
+        
+        # Show model sources
+        if get_model_source:
+            print(f"\nModel Sources:")
+            for model_id in self.config.models:
+                source = get_model_source(model_id)
+                print(f"  {model_id[:60]:<60} → {source.value.upper()}")
+        
+        print(f"\nConfiguration:")
         print(f"Models to evaluate: {len(self.config.models)}")
         print(f"Entries per model: {len(df):,}")
         print(f"Bias types: {len(self.config.bias_types)}")
@@ -96,8 +112,15 @@ class EvaluationRunner:
         # Evaluate each model
         failed_models = []
         for model_id in self.config.models:
+            # Show source for this model
+            if get_model_source:
+                source = get_model_source(model_id)
+                source_label = f" [{source.value.upper()}]"
+            else:
+                source_label = ""
+            
             print(f"\n{'='*70}")
-            print(f"Evaluating: {model_id}")
+            print(f"Evaluating: {model_id}{source_label}")
             print(f"{'='*70}")
             
             try:
@@ -214,8 +237,12 @@ class EvaluationRunner:
         if not results:
             return
         
+        # Create checkpoints subdirectory
+        checkpoint_dir = self.config.output_dir / "checkpoints"
+        checkpoint_dir.mkdir(parents=True, exist_ok=True)
+        
         safe_model_name = model_id.replace(':', '_').replace('.', '_')
-        checkpoint_file = self.config.output_dir / f"checkpoint_{safe_model_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        checkpoint_file = checkpoint_dir / f"checkpoint_{safe_model_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         
         # Save as JSON (better for multi-line text)
         with open(checkpoint_file, 'w', encoding='utf-8') as f:

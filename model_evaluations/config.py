@@ -4,31 +4,38 @@ Configuration for model evaluation.
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
+from typing import List, Dict
+import os
 
-# Benchmark models (10 models - Mistral and DeepSeek removed)
+# Benchmark models with source specification
+# Format: {model_id: source} where source is "bedrock" or "ollama"
 BENCHMARK_MODELS = [
-    # Required (3)
-    'us.anthropic.claude-3-5-sonnet-20241022-v2:0',  # Claude 3.5 Sonnet V2
-    'us.anthropic.claude-3-sonnet-20240229-v1:0',    # Claude 3 Sonnet
-    'us.meta.llama3-1-70b-instruct-v1:0',            # Llama 3.1 70B
+    # Required (3) - Bedrock
+    #'us.anthropic.claude-3-5-sonnet-20241022-v2:0',  # Claude 3.5 Sonnet V2 (Bedrock)
+    #'us.anthropic.claude-3-sonnet-20240229-v1:0',    # Claude 3 Sonnet (Bedrock)
+    'us.anthropic.claude-3-5-haiku-20241022-v1:0',  # Claude 3.5 Haiku (Bedrock)
+    'us.anthropic.claude-3-haiku-20240307-v1:0',    # Claude 3 Haiku (Bedrock)
+    'us.meta.llama3-1-70b-instruct-v1:0',            # Llama 3.1 70B (Bedrock)
     
-    # Representative (7)
-    'us.anthropic.claude-3-5-haiku-20241022-v1:0',  # Claude 3.5 Haiku
-    'us.anthropic.claude-3-haiku-20240307-v1:0',    # Claude 3 Haiku
-    'us.meta.llama3-1-8b-instruct-v1:0',            # Llama 3.1 8B
-    'us.meta.llama3-2-11b-instruct-v1:0',          # Llama 3.2 11B
-    'us.amazon.nova-pro-v1:0',                      # Nova Pro
-    'us.amazon.nova-lite-v1:0',                     # Nova Lite
-    'us.amazon.nova-micro-v1:0',                    # Nova Micro
+    # Representative (3) - Bedrock
+    'us.amazon.nova-pro-v1:0',                      # Nova Pro (Bedrock)
+    'us.amazon.nova-lite-v1:0',                     # Nova Lite (Bedrock)
+    'us.amazon.nova-micro-v1:0',                    # Nova Micro (Bedrock)
 ]
+
+# Example Ollama models (uncomment to use)
+# BENCHMARK_MODELS = [
+#     'llama3.1:8b',      # Ollama
+#     'mistral:7b',       # Ollama
+#     'qwen2.5:7b',       # Ollama
+# ]
 
 
 @dataclass
 class EvaluationConfig:
     """Configuration for model evaluation."""
     
-    # Dataset paths
+    # Dataset paths (relative to project root)
     dataset_path: Path = Path('dataset_generation/data')  # Will auto-find latest dataset
     output_dir: Path = Path('model_evaluations/results')
     
@@ -67,4 +74,25 @@ class EvaluationConfig:
         
         # Ensure output directory exists
         self.output_dir.mkdir(parents=True, exist_ok=True)
+    
+    @staticmethod
+    def get_model_sources(models: List[str]) -> Dict[str, str]:
+        """
+        Get source mapping for a list of models.
+        
+        Args:
+            models: List of model IDs
+            
+        Returns:
+            Dictionary mapping model_id -> source ("bedrock" or "ollama")
+        """
+        try:
+            from core.model_source_mapper import get_model_source, ModelSource
+            return {
+                model_id: get_model_source(model_id).value 
+                for model_id in models
+            }
+        except ImportError:
+            # Fallback: assume all are Bedrock if mapper not available
+            return {model_id: "bedrock" for model_id in models}
 
