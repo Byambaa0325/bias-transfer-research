@@ -12,23 +12,25 @@ import os
 # The system automatically detects the source based on model ID format
 BENCHMARK_MODELS = [
     # Bedrock Models (cloud-based)
-    #'us.anthropic.claude-3-5-sonnet-20241022-v2:0',  # Claude 3.5 Sonnet V2 (Bedrock)
-    #'us.anthropic.claude-3-sonnet-20240229-v1:0',    # Claude 3 Sonnet (Bedrock)
-    #'us.anthropic.claude-3-5-haiku-20241022-v1:0',  # Claude 3.5 Haiku (Bedrock)
-    #'us.anthropic.claude-3-haiku-20240307-v1:0',    # Claude 3 Haiku (Bedrock)
-    #'us.meta.llama3-1-70b-instruct-v1:0',            # Llama 3.1 70B (Bedrock)
-    #'us.amazon.nova-pro-v1:0',                      # Nova Pro (Bedrock)
-    #'us.amazon.nova-lite-v1:0',                     # Nova Lite (Bedrock)
-    #'us.amazon.nova-micro-v1:0',                    # Nova Micro (Bedrock)
+    'us.anthropic.claude-3-5-sonnet-20241022-v2:0',  # Claude 3.5 Sonnet V2 (Bedrock)
+    'us.anthropic.claude-3-sonnet-20240229-v1:0',    # Claude 3 Sonnet (Bedrock)
+    'us.anthropic.claude-3-5-haiku-20241022-v1:0',  # Claude 3.5 Haiku (Bedrock)
+    'us.anthropic.claude-3-haiku-20240307-v1:0',    # Claude 3 Haiku (Bedrock)
+    'us.meta.llama3-1-70b-instruct-v1:0',            # Llama 3.1 70B (Bedrock)
+    'us.amazon.nova-pro-v1:0',                      # Nova Pro (Bedrock)
+    'us.amazon.nova-lite-v1:0',                     # Nova Lite (Bedrock)
+    'us.amazon.nova-micro-v1:0',                    # Nova Micro (Bedrock)
     
     # Ollama Models (self-hosted)
     # Note: Make sure Ollama is running and models are pulled before evaluation
-    #'llama3.1:8b',      # Ollama - Llama 3.1 8B (~4.7GB)
-    #'mistral:7b',       # Ollama - Mistral 7B (~4.1GB)
+    'llama3.1:8b',      # Ollama - Llama 3.1 8B (~4.7GB)
+    'llama3.2:3b',
+    'llama3.2:1b',
+    'mistral:7b',       # Ollama - Mistral 7B (~4.1GB)
     'gemma2:9b',        # Ollama - Gemma 2 9B (~5.4GB)
     'qwen2.5:7b',       # Ollama - Qwen 2.5 7B (~4.1GB)
-    #'deepseek-r1:14b',  # Ollama - DeepSeek R1 14B (~8GB)
-    #'gpt-oss:20b-cloud', # Ollama - GPT OSS 20B
+    'deepseek-llm:7b',  # Ollama - DeepSeek LLM 7B (~4GB)
+    'gpt-oss:20b-cloud', # Ollama - GPT OSS 20B
 ]
 
 
@@ -54,6 +56,7 @@ class EvaluationConfig:
     
     # Checkpointing
     checkpoint_interval: int = 10  # Save checkpoint every N entries
+    resume_from_checkpoint: bool = False  # Resume from latest checkpoint if available
     
     def __post_init__(self):
         """Initialize default values."""

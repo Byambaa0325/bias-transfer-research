@@ -227,3 +227,4 @@ class OllamaClient:
             raise OllamaAPIError(500, f"Failed to pull model: {e}", response=None)
 
 
+

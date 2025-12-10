@@ -4,7 +4,7 @@ Runs evaluation for all models on the dataset.
 
 import pandas as pd
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set, Tuple, Optional
 from datetime import datetime
 from tqdm import tqdm
 import json
@@ -156,6 +156,32 @@ class EvaluationRunner:
         evaluator = ModelEvaluator(model_id)
         model_results = []
         
+        # Check if we should resume from checkpoint
+        if self.config.resume_from_checkpoint:
+            checkpoint_data = self._load_latest_checkpoint(model_id)
+            if checkpoint_data:
+                # Extract already-processed entries
+                processed_keys = set()
+                for entry in checkpoint_data:
+                    key = (entry.get('emgsd_text'), entry.get('bias_type'))
+                    processed_keys.add(key)
+                    # Add existing results
+                    model_results.append(entry)
+                
+                # Filter dataframe to only process remaining entries
+                remaining_df = self._filter_processed_entries(df, processed_keys)
+                
+                if len(remaining_df) == 0:
+                    print(f"✓ All entries already processed. Found {len(model_results)} existing results.")
+                    self.results[model_id] = model_results
+                    return
+                
+                print(f"✓ Resuming from checkpoint: {len(model_results)} entries already processed")
+                print(f"  Remaining entries to process: {len(remaining_df)}")
+                df = remaining_df
+            else:
+                print("  No checkpoint found, starting fresh")
+        
         # Process entries
         if self.config.use_parallel:
             self._evaluate_parallel(evaluator, df, model_results)
@@ -231,6 +257,79 @@ class EvaluationRunner:
             
             # Checkpoint
             self._save_checkpoint(evaluator.model_id, results)
+    
+    def _load_latest_checkpoint(self, model_id: str) -> Optional[List[Dict[str, Any]]]:
+        """
+        Load the latest checkpoint for a model.
+        
+        Args:
+            model_id: Model identifier
+            
+        Returns:
+            List of checkpoint entries, or None if no checkpoint found
+        """
+        checkpoint_dir = self.config.output_dir / "checkpoints"
+        if not checkpoint_dir.exists():
+            return None
+        
+        safe_model_name = model_id.replace(':', '_').replace('.', '_')
+        pattern = f"checkpoint_{safe_model_name}_*.json"
+        
+        # Find all checkpoints for this model
+        checkpoint_files = list(checkpoint_dir.glob(pattern))
+        if not checkpoint_files:
+            return None
+        
+        # Get the latest checkpoint (by filename timestamp)
+        latest_checkpoint = max(checkpoint_files, key=lambda p: p.name)
+        
+        try:
+            with open(latest_checkpoint, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            print(f"  Loaded checkpoint: {latest_checkpoint.name} ({len(data)} entries)")
+            return data
+        except Exception as e:
+            print(f"  Warning: Failed to load checkpoint {latest_checkpoint}: {e}")
+            return None
+    
+    def _filter_processed_entries(
+        self, 
+        df: pd.DataFrame, 
+        processed_keys: Set[Tuple[str, str]]
+    ) -> pd.DataFrame:
+        """
+        Filter dataframe to exclude already-processed entries.
+        
+        Args:
+            df: DataFrame with entries to evaluate
+            processed_keys: Set of (emgsd_text, bias_type) tuples already processed
+            
+        Returns:
+            Filtered DataFrame with only remaining entries
+        """
+        remaining_indices = []
+        
+        for idx, entry in df.iterrows():
+            # Access DataFrame column (iterrows returns Series)
+            emgsd_text = entry.get('emgsd_text', '') if 'emgsd_text' in entry.index else ''
+            if pd.isna(emgsd_text):
+                emgsd_text = ''
+            
+            # Check if this entry needs processing for any bias type
+            needs_processing = False
+            for bias_type in self.config.bias_types:
+                key = (emgsd_text, bias_type)
+                if key not in processed_keys:
+                    needs_processing = True
+                    break
+            
+            if needs_processing:
+                remaining_indices.append(idx)
+        
+        if not remaining_indices:
+            return df.iloc[0:0].copy()  # Return empty DataFrame with same structure
+        
+        return df.loc[remaining_indices].copy()
     
     def _save_checkpoint(self, model_id: str, results: List[Dict[str, Any]]):
         """Save checkpoint for a model."""

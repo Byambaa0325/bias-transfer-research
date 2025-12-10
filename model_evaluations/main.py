@@ -35,6 +35,9 @@ Examples:
 
   # Evaluate specific bias types
   python -m model_evaluations.main --bias-types confirmation_bias availability_bias
+
+  # Resume from latest checkpoint
+  python -m model_evaluations.main --resume-from-checkpoint
         """
     )
     
@@ -93,6 +96,11 @@ Examples:
         default=10,
         help='Save checkpoint every N entries (default: 10)'
     )
+    parser.add_argument(
+        '--resume-from-checkpoint',
+        action='store_true',
+        help='Resume evaluation from latest checkpoint if available (default: False)'
+    )
     
     return parser
 
@@ -112,7 +120,8 @@ def main():
         max_workers=args.workers,
         max_requests_per_second=args.rate_limit,
         use_parallel=not args.no_parallel,
-        checkpoint_interval=args.checkpoint_interval
+        checkpoint_interval=args.checkpoint_interval,
+        resume_from_checkpoint=args.resume_from_checkpoint
     )
     
     # Print configuration
@@ -132,6 +141,8 @@ def main():
     if config.use_parallel:
         print(f"  Workers:            {config.max_workers}")
         print(f"  Rate Limit:         {config.max_requests_per_second} req/s")
+    print(f"Checkpoint Interval:  {config.checkpoint_interval}")
+    print(f"Resume from Checkpoint: {config.resume_from_checkpoint}")
     print()
     
     # Run evaluation
