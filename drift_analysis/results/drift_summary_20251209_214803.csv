@@ -1,0 +1,2 @@
+model_id,total_entries,valid_entries,error_entries,hearts_mean_control_score,hearts_mean_bias_score,mean_cosine_similarity,std_cosine_similarity,mean_euclidean_distance,std_euclidean_distance,mean_semantic_similarity,std_semantic_similarity,trait_mention_rate,mean_reinforcement_score,std_reinforcement_score
+us.meta.llama3-1-70b-instruct-v1_0,800,800,0,,,0.30745456,0.22419399,1.1519611229002475,0.24114136291447838,0.521225,0.26730302,0.575,0.55349,0.36944294

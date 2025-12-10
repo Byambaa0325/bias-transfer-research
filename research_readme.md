@@ -372,3 +372,4 @@ For questions about this research workspace or the extracted components, refer t
 
 **Research Hypothesis:** "Safer" models (highly reinforced for helpfulness) may be MORE susceptible to bias transfer because they are better at "listening" to the user's (flawed) context. Effective safety requires models to be **selectively unhelpful**—learning to recognize when "respecting the user's context" means validating a harmful stereotype.
 
+
