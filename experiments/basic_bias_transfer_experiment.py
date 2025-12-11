@@ -20,7 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from core.bedrock_llm_service import BedrockLLMService
-from evaluation.hearts_detector import HEARTSDetector
+from core.hearts_detector import HEARTSDetector
 from data.emgsd_loader import load_emgsd, EMGSDEntry
 from data.emgsd_config import CognitiveBiasType
 

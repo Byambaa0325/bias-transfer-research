@@ -1,0 +1,11 @@
+,drift_drift_score,drift_drift_score,drift_drift_score,drift_drift_score,drift_drift_score,drift_significant_drift,drift_raw_drift
+,mean,std,count,min,max,mean,mean
+bias_type,,,,,,,
+anchoring_bias,0.2428,0.2295,1300,0.0,0.9477,0.4608,0.0216
+availability_bias,0.2325,0.2123,1300,0.0,0.9673,0.4592,-0.0087
+confirmation_bias,0.2503,0.2281,1300,0.0,0.9542,0.4631,0.0436
+demographic_bias,0.2232,0.2165,1300,0.0,0.9408,0.4185,0.0116
+framing_bias,0.2596,0.2357,1300,0.0,0.957,0.4931,0.0628
+leading_question,0.2563,0.2334,1300,0.0,0.9586,0.4685,0.0617
+negativity_bias,0.2583,0.2344,1300,0.0,0.9552,0.4838,0.0603
+stereotypical_assumption,0.2447,0.2342,1300,0.0,0.9432,0.4438,0.0555

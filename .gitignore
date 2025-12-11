@@ -36,6 +36,18 @@ doc/
 *.md.backup
 *.rst.backup
 
+# Backup files
+*backup*.py
+*backup*.ipynb
+*_backup.py
+*_backup.ipynb
+*_original_backup.py
+*_refactored.py
+*_original.py
+*_old.py
+*.bak
+*.backup
+
 # IDE and editor files
 .vscode/
 .idea/

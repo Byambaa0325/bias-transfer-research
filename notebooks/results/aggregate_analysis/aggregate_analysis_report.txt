@@ -1,0 +1,53 @@
+================================================================================
+AGGREGATE ANALYSIS SUMMARY REPORT
+Generated: 2025-12-11 00:01:05
+================================================================================
+
+## OVERALL STATISTICS
+--------------------------------------------------------------------------------
+Total Models Evaluated: 13
+Total Entries: 10,400
+Valid Entries: 10,400
+
+## MODEL RANKINGS BY MEAN DRIFT
+--------------------------------------------------------------------------------
+ 1. us_meta_llama3-1-70b-instruct-v1_0                 | Mean Drift: 0.3098 | Significant Rate: 56.4%
+ 2. deepseek-llm_7b                                    | Mean Drift: 0.2965 | Significant Rate: 56.5%
+ 3. llama3_2_1b                                        | Mean Drift: 0.2897 | Significant Rate: 54.8%
+ 4. llama3_2_3b                                        | Mean Drift: 0.2771 | Significant Rate: 54.0%
+ 5. llama3_1_8b                                        | Mean Drift: 0.2551 | Significant Rate: 50.0%
+ 6. qwen2_5_7b                                         | Mean Drift: 0.2499 | Significant Rate: 46.0%
+ 7. mistral_7b                                         | Mean Drift: 0.2477 | Significant Rate: 47.9%
+ 8. us_amazon_nova-pro-v1_0                            | Mean Drift: 0.2319 | Significant Rate: 43.1%
+ 9. us_amazon_nova-micro-v1_0                          | Mean Drift: 0.2288 | Significant Rate: 37.2%
+10. us_anthropic_claude-3-5-haiku-20241022-v1_0        | Mean Drift: 0.2256 | Significant Rate: 42.5%
+11. us_anthropic_claude-3-haiku-20240307-v1_0          | Mean Drift: 0.2130 | Significant Rate: 40.5%
+12. gemma2_9b                                          | Mean Drift: 0.2118 | Significant Rate: 41.9%
+13. us_amazon_nova-lite-v1_0                           | Mean Drift: 0.1610 | Significant Rate: 29.0%
+
+## BIAS TYPE RANKINGS
+--------------------------------------------------------------------------------
+ 1. framing_bias                   | Mean: 0.2596 ± 0.2357 | Count: 1300
+ 2. negativity_bias                | Mean: 0.2583 ± 0.2344 | Count: 1300
+ 3. leading_question               | Mean: 0.2563 ± 0.2334 | Count: 1300
+ 4. confirmation_bias              | Mean: 0.2503 ± 0.2281 | Count: 1300
+ 5. stereotypical_assumption       | Mean: 0.2447 ± 0.2342 | Count: 1300
+ 6. anchoring_bias                 | Mean: 0.2428 ± 0.2295 | Count: 1300
+ 7. availability_bias              | Mean: 0.2325 ± 0.2123 | Count: 1300
+ 8. demographic_bias               | Mean: 0.2232 ± 0.2165 | Count: 1300
+
+## STEREOTYPE TYPE RANKINGS
+--------------------------------------------------------------------------------
+ 1. nationality                    | Mean: 0.2766 ± 0.2518 | Count: 5096
+ 2. religion                       | Mean: 0.2544 ± 0.2370 | Count: 312
+ 3. gender                         | Mean: 0.2148 ± 0.1780 | Count: 1352
+ 4. profession                     | Mean: 0.2140 ± 0.2027 | Count: 3640
+
+## KEY FINDINGS
+--------------------------------------------------------------------------------
+Highest Mean Drift: us_meta_llama3-1-70b-instruct-v1_0 (0.3098)
+Lowest Mean Drift: us_amazon_nova-lite-v1_0 (0.1610)
+Overall Mean Drift: 0.2460 ± 0.0408
+Overall Significant Drift Rate: 46.1%
+
+================================================================================

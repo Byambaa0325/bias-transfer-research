@@ -12,7 +12,7 @@ import re
 
 # Import HEARTS detector
 try:
-    from evaluation.hearts_detector import HEARTSDetector, is_hearts_available
+    from core.hearts_detector import HEARTSDetector, is_hearts_available
     HEARTS_AVAILABLE = is_hearts_available()
 except ImportError:
     HEARTS_AVAILABLE = False

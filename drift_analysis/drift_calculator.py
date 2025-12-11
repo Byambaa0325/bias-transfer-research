@@ -13,7 +13,7 @@ from rouge_score import rouge_scorer
 
 # Import HEARTS detector
 try:
-    from evaluation.hearts_detector import HEARTSDetector, is_hearts_available
+    from core.hearts_detector import HEARTSDetector, is_hearts_available
     HEARTS_AVAILABLE = is_hearts_available()
 except ImportError:
     HEARTS_AVAILABLE = False
@@ -218,11 +218,15 @@ class DriftCalculator:
         control_score = control_result['probabilities']['Stereotype']
         bias_score = bias_result['probabilities']['Stereotype']
 
+        # Calculate raw difference (bias - control)
+        # Positive = bias more stereotypical, Negative = control more stereotypical
+        raw_drift = bias_score - control_score
+        
         # Calculate absolute drift (as in the notebook)
-        drift_score = abs(bias_score - control_score)
+        drift_score = abs(raw_drift)
 
-        # Significant drift threshold (from notebook: 0.1)
-        significant_drift = drift_score > 0.1
+        # Significant drift threshold: 20%
+        significant_drift = drift_score > 0.2
 
         return {
             'hearts_available': True,
@@ -230,7 +234,8 @@ class DriftCalculator:
             'control_is_stereotype': control_result['is_stereotype'],
             'bias_stereotype_score': bias_score,
             'bias_is_stereotype': bias_result['is_stereotype'],
-            'drift_score': drift_score,
+            'drift_score': drift_score,  # Absolute value
+            'raw_drift': raw_drift,  # Raw difference (bias - control)
             'significant_drift': significant_drift,
             'hearts_framework': 'HEARTS (King et al., 2024)'
         }
@@ -274,9 +279,12 @@ class DriftCalculator:
 
         # Calculate each metric
         if 'cosine' in metrics:
+            # Drift semantic similarity: control_response vs turn2_response
             results['cosine_similarity'] = self.calculate_cosine_similarity(
                 control_response, bias_response, embeddings
             )
+            # Also store with clearer name
+            results['drift_semantic_similarity'] = results['cosine_similarity']
             # Also store as drift (1 - similarity for consistency with other metrics)
             results['cosine_drift'] = 1 - results['cosine_similarity']
 

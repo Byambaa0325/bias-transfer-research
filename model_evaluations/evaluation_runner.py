@@ -160,9 +160,22 @@ class EvaluationRunner:
         if self.config.resume_from_checkpoint:
             checkpoint_data = self._load_latest_checkpoint(model_id)
             if checkpoint_data:
+                # Deduplicate checkpoint data (keep first occurrence of each key)
+                seen_keys = set()
+                deduplicated_checkpoint = []
+                for entry in checkpoint_data:
+                    key = (entry.get('emgsd_text'), entry.get('bias_type'))
+                    if key not in seen_keys:
+                        seen_keys.add(key)
+                        deduplicated_checkpoint.append(entry)
+                
+                if len(deduplicated_checkpoint) < len(checkpoint_data):
+                    duplicates_removed = len(checkpoint_data) - len(deduplicated_checkpoint)
+                    print(f"  Warning: Removed {duplicates_removed} duplicate entries from checkpoint")
+                
                 # Extract already-processed entries
                 processed_keys = set()
-                for entry in checkpoint_data:
+                for entry in deduplicated_checkpoint:
                     key = (entry.get('emgsd_text'), entry.get('bias_type'))
                     processed_keys.add(key)
                     # Add existing results
@@ -356,12 +369,25 @@ class EvaluationRunner:
         if not results:
             return
         
+        # Deduplicate results (keep first occurrence of each (emgsd_text, bias_type) pair)
+        seen_keys = set()
+        deduplicated_results = []
+        for entry in results:
+            key = (entry.get('emgsd_text'), entry.get('bias_type'))
+            if key not in seen_keys:
+                seen_keys.add(key)
+                deduplicated_results.append(entry)
+        
+        if len(deduplicated_results) < len(results):
+            duplicates_removed = len(results) - len(deduplicated_results)
+            print(f"  Warning: Removed {duplicates_removed} duplicate entries from final results")
+        
         safe_model_name = model_id.replace(':', '_').replace('.', '_')
         
         # Save as JSON (better for multi-line text and paragraphs)
         json_file = self.config.output_dir / f"evaluation_{safe_model_name}.json"
         with open(json_file, 'w', encoding='utf-8') as f:
-            json.dump(results, f, indent=2, ensure_ascii=False)
+            json.dump(deduplicated_results, f, indent=2, ensure_ascii=False)
         
         print(f"✓ Saved results: {json_file} ({len(results):,} evaluations)")
 

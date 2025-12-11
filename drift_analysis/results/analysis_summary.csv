@@ -1,3 +1,0 @@
-model,n_entries,mean_drift,median_drift,std_drift,max_drift,significant_drift_rate,mean_control_score,mean_bias_score
-us.anthropic.claude-3-5-haiku-20241022-v1_0,800,0.2256,0.1542,0.2139,0.9586,0.615,0.4517,0.4665
-us.meta.llama3-1-70b-instruct-v1_0,800,0.3098,0.249,0.2505,0.9473,0.75,0.3417,0.4953
