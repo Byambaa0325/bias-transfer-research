@@ -2,6 +2,8 @@
 
 Calculates semantic drift and stereotype leakage from model evaluation responses using HEARTS framework.
 
+**Addresses RQ4:** Compares HEARTS-based drift scores with semantic similarity-based drift scores to determine if they measure the same phenomenon or capture different aspects of bias transfer.
+
 ## Input
 - Evaluation JSON files from model_evaluations
 - Configuration: embedding model, HEARTS detector settings
@@ -79,6 +81,20 @@ Four semantic similarity metrics are calculated:
    - **Zero**: No difference in similarity to stereotype
 
 All use sentence-transformers embeddings (default: all-MiniLM-L6-v2)
+
+## RQ4: HEARTS vs Semantic Drift Comparison
+
+This module addresses **RQ4** by calculating both:
+- **HEARTS Drift**: Based on ALBERT-v2 classifier probabilities (binary stereotype detection)
+- **Semantic Drift**: Based on cosine similarity of embeddings (continuous semantic distance)
+
+**Research Question:** Do these two metrics measure the same phenomenon, or do they capture different aspects of bias transfer?
+
+**Analysis Approach:**
+- Compare `drift_drift_score` (HEARTS-based) with `semantic_similarity_drift` (embedding-based)
+- Calculate correlation between metrics
+- Identify cases where metrics disagree (HEARTS detects drift but semantic doesn't, or vice versa)
+- Analyze which metric is more sensitive to different types of bias transfer
 
 ## How It Works
 1. Loads evaluation JSON files
